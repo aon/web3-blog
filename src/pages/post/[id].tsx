@@ -212,7 +212,6 @@ const Page: NextPage<Props> = ({ post, hashes }) => {
               </div>
             )}
           </div>
-          )
           {post.author === account.address && (
             <div className="fixed bottom-8 right-8 lg:bottom-20 lg:right-20">
               {editMode ? (
