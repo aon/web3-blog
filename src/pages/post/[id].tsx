@@ -124,124 +124,128 @@ const Page: NextPage<Props> = ({ post, hashes }) => {
   return (
     <div className="flex w-full justify-center">
       <Head>
-        <title>{post.title} | Blog</title>
+        <title>{router.isFallback ? "Loading..." : post.title} | Blog</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       {router.isFallback ? (
-        <div className="flex w-full flex-col lg:max-w-2xl"><p>Loading...</p></div>
-      ) : (
         <div className="flex w-full flex-col lg:max-w-2xl">
-          <div className="flex flex-col">
-            <div className="relative h-80 w-full">
-              <Image
-                alt="Cover image uploaded by user"
-                src={editMode ? imagePreview || post.imageUrl : post.imageUrl}
-                layout="fill"
-                objectFit="cover"
-              />
-            </div>
-            {editMode && (
-              <>
-                <label htmlFor="file-upload" className="btn mt-5">
-                  Change cover image
-                </label>
-                <input
-                  id="file-upload"
-                  type="file"
-                  className="hidden"
-                  onChange={handleImageSelect}
-                  accept="image/*"
+          <p>Loading...</p>
+        </div>
+      ) : (
+        <>
+          <div className="flex w-full flex-col lg:max-w-2xl">
+            <div className="flex flex-col">
+              <div className="relative h-80 w-full">
+                <Image
+                  alt="Cover image uploaded by user"
+                  src={editMode ? imagePreview || post.imageUrl : post.imageUrl}
+                  layout="fill"
+                  objectFit="cover"
                 />
-              </>
+              </div>
+              {editMode && (
+                <>
+                  <label htmlFor="file-upload" className="btn mt-5">
+                    Change cover image
+                  </label>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    className="hidden"
+                    onChange={handleImageSelect}
+                    accept="image/*"
+                  />
+                </>
+              )}
+            </div>
+
+            <article className="prose mt-10 w-full max-w-none lg:prose-lg lg:max-w-2xl">
+              {editMode ? (
+                <h1>
+                  <input
+                    type="text"
+                    className="input input-bordered input-lg"
+                    value={newTitle}
+                    onInput={(e: ChangeEvent<HTMLInputElement>) =>
+                      setNewTitle(e.target.value)
+                    }
+                  />
+                </h1>
+              ) : (
+                <>
+                  {!post.isPublished && (
+                    <div className="not-prose">
+                      <p className="mb-2 font-bold text-error">
+                        Unpublished post
+                      </p>
+                    </div>
+                  )}
+                  <h1>{post.title}</h1>
+                </>
+              )}
+              {editMode ? (
+                <MarkdownEditor
+                  value={newContent}
+                  onChange={(e) => setNewContent(e)}
+                />
+              ) : (
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {newContent}
+                </ReactMarkdown>
+              )}
+            </article>
+
+            {editMode && (
+              <div className="mt-3 flex justify-end">
+                <div className="form-control w-fit">
+                  <label className="label cursor-pointer">
+                    <span className="label-text mr-4">Published</span>
+                    <input
+                      type="checkbox"
+                      checked={newIsPublished}
+                      onChange={() => setNewIsPublished(!newIsPublished)}
+                      className="checkbox"
+                    />
+                  </label>
+                </div>
+              </div>
             )}
           </div>
-
-          <article className="prose mt-10 w-full max-w-none lg:prose-lg lg:max-w-2xl">
-            {editMode ? (
-              <h1>
-                <input
-                  type="text"
-                  className="input input-bordered input-lg"
-                  value={newTitle}
-                  onInput={(e: ChangeEvent<HTMLInputElement>) =>
-                    setNewTitle(e.target.value)
-                  }
-                />
-              </h1>
-            ) : (
-              <>
-                {!post.isPublished && (
-                  <div className="not-prose">
-                    <p className="mb-2 font-bold text-error">
-                      Unpublished post
-                    </p>
-                  </div>
-                )}
-                <h1>{post.title}</h1>
-              </>
-            )}
-            {editMode ? (
-              <MarkdownEditor
-                value={newContent}
-                onChange={(e) => setNewContent(e)}
-              />
-            ) : (
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {newContent}
-              </ReactMarkdown>
-            )}
-          </article>
-
-          {editMode && (
-            <div className="mt-3 flex justify-end">
-              <div className="form-control w-fit">
-                <label className="label cursor-pointer">
-                  <span className="label-text mr-4">Published</span>
-                  <input
-                    type="checkbox"
-                    checked={newIsPublished}
-                    onChange={() => setNewIsPublished(!newIsPublished)}
-                    className="checkbox"
-                  />
-                </label>
-              </div>
+          )
+          {post.author === account.address && (
+            <div className="fixed bottom-8 right-8 lg:bottom-20 lg:right-20">
+              {editMode ? (
+                <div className="flex space-x-3">
+                  <button
+                    className={cn("btn btn-success btn-circle", {
+                      loading: savingPost,
+                    })}
+                    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+                    onClick={saveEdit}
+                    disabled={savingPost}
+                  >
+                    {!savingPost && <FiSave size={16} />}
+                  </button>
+                  <button
+                    className="btn btn-error btn-circle"
+                    onClick={cancelEdit}
+                    disabled={savingPost}
+                  >
+                    <FiX size={16} />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setEditMode(!editMode)}
+                  className="btn btn-circle"
+                >
+                  <FiEdit size={16} />
+                </button>
+              )}
             </div>
           )}
-        </div>
-      )}
-
-      {post.author === account.address && (
-        <div className="fixed bottom-8 right-8 lg:bottom-20 lg:right-20">
-          {editMode ? (
-            <div className="flex space-x-3">
-              <button
-                className={cn("btn btn-success btn-circle", {
-                  loading: savingPost,
-                })}
-                // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                onClick={saveEdit}
-                disabled={savingPost}
-              >
-                {!savingPost && <FiSave size={16} />}
-              </button>
-              <button
-                className="btn btn-error btn-circle"
-                onClick={cancelEdit}
-                disabled={savingPost}
-              >
-                <FiX size={16} />
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setEditMode(!editMode)}
-              className="btn btn-circle"
-            >
-              <FiEdit size={16} />
-            </button>
-          )}
-        </div>
+        </>
       )}
     </div>
   );
