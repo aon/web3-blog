@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import Head from "next/head";
+import { shortenAddress } from "../utils/wallet";
 
 const About: NextPage = () => {
   return (
@@ -29,7 +30,7 @@ const About: NextPage = () => {
             href={`https://mumbai.polygonscan.com/address/${process.env
               .NEXT_PUBLIC_CONTRACT_ADDRESS!}`}
           >
-            {process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}
+            {shortenAddress(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!)}
           </a>
           .
         </p>
