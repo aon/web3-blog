@@ -1,0 +1,31 @@
+{
+  "env": {
+    "browser": false,
+    "es2021": true,
+    "mocha": true,
+    "node": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "tsconfig.json",
+    "sourceType": "module"
+  },
+  "extends": [
+    "next/core-web-vitals",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+  ],
+  "ignorePatterns": [
+    "node_modules",
+    "artifacts",
+    "cache",
+    "coverage",
+    "next.config.js",
+    "tailwind.config.js"
+  ],
+  "rules": {
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-explicit-any": "off"
+  }
+}
